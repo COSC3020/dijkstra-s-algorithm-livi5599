@@ -1,94 +1,43 @@
-//Need a place to store visited & unvisited nodes
-//Need a place to store tentative node distances (infinity), until they are updated with the shortest distance
-//Possibly need a place to store previous nodes when node distance is updated (used when wanting to construct shortest path from 2 nodes)
-
-//Beginning:
-//1. Mark all nodes as unvisited
-//2. Assign to all nodes, except starting node, a tentative distance value (infinity)
-
-//Recursive steps:
-//3. For current node calculate the distance to all unvisited neighbors
-//3.1. Update shortest distance if new distance is shorter than old distance
-//4. Mark current node as visited
-//5. Choose new current node from unvisited list w/ minimal distance
-
 function dijkstra(graph, sourceNode) {
-    var visited = [];
-    var unvisited = [];
-    var shortestDist = [];
-    for (row = 0; row < graph.length; row++) {
-        unvisited.push(row);
-        shortestDist[row] = Infinity;
+    //var visited = [];
+    var unvisited = []; //used to store nodes that haven't been visited yet
+    var shortestDist = []; //used to store the shortest distances from sourceNode to all other nodes
+    for (row = 0; row < graph.length; row++) { //Iterates over each node in the graph
+        unvisited.push(row); //Adds each node to unvisited since no nodes have been visited/processed yet
+        shortestDist[row] = Infinity; //Sets the shortest distance of each node to infinity, assuming nodes are initially unreachable
     }
     console.log("unvisited after for loop = ", unvisited);
-    //console.log("shortestDist after for loop = ", shortestDist);
-    shortestDist[sourceNode] = 0;
-    //console.log("updated shortestDist = ", shortestDist);
+    console.log("shortestDist after for loop = ", shortestDist);
+    shortestDist[sourceNode] = 0; //Sets the distance from sourceNode to itself as 0, since no travel is needed 
+    console.log("updated shortestDist = ", shortestDist);
 
-    //while (unvisited.length != 0) {
-        for (column = 0; column < graph.length; column++) {
-            console.log(graph[sourceNode][column]);
+    while (unvisited.length != 0) { //Runs until all nodes have been processed (unvisited is empty)
+        let currentNode = null; //Represents the node to be processed next. Set to null since no node is selected yet
+        let minDist = Infinity; //Represents the shortest known distance from sourceNode among unvisited nodes. Set to infinity since it is assumed that neighbors are unreachable
+        for (column = 0; column < unvisited.length; column++) { //Iterates over all unvisited nodes
+            //console.log(graph[sourceNode][column]);
             //console.log("graph[sourceNode] = ", graph[sourceNode]);
             //console.log("unvisited = ", unvisited);
             //console.log("unvisited[column] = ", unvisited[column]);
             //console.log(unvisited.includes(unvisited[column]));
             //console.log(shortestDist[column]);
             //console.log("unvisited[column] = ", unvisited[column]);
-            if (unvisited.includes(unvisited[column]) && shortestDist[column] > 0) {
-                if (graph[sourceNode][column] + shortestDist[sourceNode] < shortestDist[column]) {
-                    shortestDist[column] = graph[sourceNode][column] + shortestDist[sourceNode];
-                    console.log("shortestDist = ", shortestDist);
-                }
+            if (shortestDist[unvisited[column]] < minDist) { //If the shortest distance to the current unvisited node is less than the shortest known distance from sourceNode to its neighbor...
+                minDist = shortestDist[column]; //Set the shortest known distance to the distance of this unvisited node
+                currentNode = column; //Set currentNode to this unvisited node
+                console.log("minDist after if = ", minDist);
+                console.log("currentNode after if = ", currentNode);
             }
         }
-    //}
 
+        unvisited = unvisited.filter(node => node !== currentNode); //Remove the node being processed next (currentNode) from unvisited, as it will now be processed
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-//     const dist = [];
-//     const distance = [];
-
-//     for (i = 0; i < graph.length; i++) {
-//         dist[i] = Infinity;
-//     }
-
-//  dist[sourceNode] = 0;
-
-//     while (visited.length < graph.length) {
-//         var min = Infinity;
-//         var nextNode = undefined;
-//         for (node = 0; node < graph.length; node++) {
-//             if (graph[sourceNode][node] > 0) {
-//                 nextNode = node;
-//             }
-//             if (dist[nextNode] > dist[sourceNode] + graph[sourceNode][nextNode]) {
-//                 dist[nextNode] = dist[sourceNode] + graph[sourceNode][nextNode];
-//                 dist.push(dist[nextNode]);
-//             }
-//         }
-        
-//     }
-    
-//     return [];
+        for (column = 0; column < unvisited.length; column++) { //Iterates over each unvisited neighbor of sourceNode
+            if (graph[currentNode][column] + shortestDist[column] < minDist) { //If the distance from the node being processed and its neighbor + the shortest distance from sourceNode to its neighbor is less than the shortest known distance from sourceNode...
+                shortestDist[column] = graph[currentNode][column] + shortestDist[column]; //Set the shortest distance from sourceNode to its neighbor to the sum of the distance from the node being processed to the neighbor node and the shortest distance from sourceNode to its neighbor
+                console.log("shortestDist = ", shortestDist);
+            }
+        }
+    }
+    return shortestDist; //Return the shortest distances from sourceNode to all other nodes
 }
-
-var matrix = [
-    [0, 2, 8, 0, 0, 0],
-    [2, 0, 5, 6, 0, 0],
-    [8, 5, 0, 3, 2, 0],
-    [0, 6, 3, 0, 1, 9],
-    [0, 0, 2, 1, 0, 3],
-    [0, 0, 0, 9, 3, 0]
-];
-
-console.log(dijkstra(matrix, 0));
